@@ -3,8 +3,12 @@ import yt_dlp
 import os
 import imageio_ffmpeg
 
-# Configurar ruta de ffmpeg para yt_dlp
-os.environ["PATH"] += os.pathsep + os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
+# Obtener ruta exacta de ffmpeg
+ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+ffmpeg_dir = os.path.dirname(ffmpeg_path)
+
+# Añadir ffmpeg al PATH
+os.environ["PATH"] += os.pathsep + ffmpeg_dir
 
 def descargar_mp3(url, carpeta_destino='descargas'):
     if not os.path.exists(carpeta_destino):
@@ -13,6 +17,7 @@ def descargar_mp3(url, carpeta_destino='descargas'):
     opciones = {
         'format': 'bestaudio/best',
         'outtmpl': f'{carpeta_destino}/%(title)s.%(ext)s',
+        'ffmpeg_location': ffmpeg_path,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
