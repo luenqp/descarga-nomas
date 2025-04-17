@@ -1,10 +1,10 @@
 import streamlit as st
 import yt_dlp
 import os
-import ffmpeg_static
+import imageio_ffmpeg
 
-# Configurar ffmpeg para yt_dlp
-os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_static.path)
+# Configurar ruta de ffmpeg para yt_dlp
+os.environ["PATH"] += os.pathsep + os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
 
 def descargar_mp3(url, carpeta_destino='descargas'):
     if not os.path.exists(carpeta_destino):
