@@ -2,22 +2,24 @@ import os
 import streamlit as st
 import yt_dlp
 from pathlib import Path
-import ffmpeg
-import shutil
 import imageio_ffmpeg
 
-# Ruta a ffmpeg portable
+# Obtener la ruta del ejecutable de ffmpeg portable
 ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
-os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_path)
 
-def descargar_y_convertir_mp3(url, carpeta_destino='descargas'):
+def descargar_mp3(url, carpeta_destino='descargas'):
     if not os.path.exists(carpeta_destino):
         os.makedirs(carpeta_destino)
 
-    # Descargar el mejor audio sin convertir
     opciones = {
         'format': 'bestaudio/best',
         'outtmpl': f'{carpeta_destino}/%(title)s.%(ext)s',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'ffmpeg_location': ffmpeg_path,  # Esta es la forma correcta
         'quiet': True,
         'no_warnings': True,
     }
@@ -25,13 +27,9 @@ def descargar_y_convertir_mp3(url, carpeta_destino='descargas'):
     try:
         with yt_dlp.YoutubeDL(opciones) as ydl:
             info = ydl.extract_info(url, download=True)
-            archivo_origen = ydl.prepare_filename(info)
-            archivo_salida = Path(archivo_origen).with_suffix('.mp3')
-
-            # Convertir a MP3 usando ffmpeg-python
-            ffmpeg.input(archivo_origen).output(str(archivo_salida), format='mp3', audio_bitrate='192k').run(quiet=True, overwrite_output=True)
-
-            return str(archivo_salida)
+            archivo = ydl.prepare_filename(info)
+            mp3_file = Path(archivo).with_suffix(".mp3")
+            return str(mp3_file)
     except Exception as e:
         print("Error:", e)
         return None
@@ -53,7 +51,7 @@ if st.button("Descargar MP3") and urls_input:
     urls = [u.strip() for u in urls_input.split(',') if u.strip()]
     for url in urls:
         with st.spinner(f"Descargando: {url}"):
-            archivo = descargar_y_convertir_mp3(url)
+            archivo = descargar_mp3(url)
             if archivo and os.path.exists(archivo):
                 st.success(f"✅ Descargado: {Path(archivo).name}")
                 with open(archivo, "rb") as f:
@@ -65,3 +63,4 @@ if st.button("Descargar MP3") and urls_input:
                     )
             else:
                 st.error("❌ Error al descargar el MP3.")
+
