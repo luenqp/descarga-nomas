@@ -55,7 +55,7 @@ if st.button("Convertir a MP3") and urls_input:
         with st.spinner(f"Convertiendo: {url}"):
             archivo = descargar_mp3(url)
             if archivo and os.path.exists(archivo):
-                st.success(f"✅ Descargado: {Path(archivo).name}")
+                st.success(f"✅ Convertido: {Path(archivo).name}")
                 with open(archivo, "rb") as f:
                     st.download_button(
                         label=f"⬇️ Descargar {Path(archivo).name}",
