@@ -66,5 +66,6 @@ if st.button("Convertir a MP3") and urls_input:
             else:
                 st.error("❌ Error al descargar el MP3.")
 st.header("Colabora voluntariamente ... gracias :)")
+st.header("Mi yape: 933085789")
 st.image("yapeo.png", width=300)
 
