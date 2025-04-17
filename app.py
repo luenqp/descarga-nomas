@@ -40,7 +40,7 @@ def descargar_mp3(url, carpeta_destino='descargas'):
 
 st.set_page_config(page_title="Descarga Nomás", page_icon="🎧")
 
-st.markdown("<h1 style='margin-top: 5px;'>🎧 Descarga<br/>Nomás 🎶</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='margin-top: 1px;'>🎧 Descarga<br/>Nomás 🎶</h1>", unsafe_allow_html=True)
 
 st.write("Descarga tu música MP3 de manera rápida y sencilla.")
 urls_input = st.text_area("🔗 Pega una o más URLs de YouTube (separadas por comas):", height=100)
