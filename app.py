@@ -1,9 +1,7 @@
 import streamlit as st
 import yt_dlp
 import os
-from pathlib import Path
 
-# Función para descargar el MP3
 def descargar_mp3(url, carpeta_destino='descargas'):
     if not os.path.exists(carpeta_destino):
         os.makedirs(carpeta_destino)
@@ -20,26 +18,24 @@ def descargar_mp3(url, carpeta_destino='descargas'):
         'no_warnings': True,
     }
 
-    archivo_mp3 = None
-
     try:
         with yt_dlp.YoutubeDL(opciones) as ydl:
-            info = ydl.extract_info(url, download=True)
-            nombre_base = ydl.prepare_filename(info)
-            archivo_mp3 = Path(nombre_base).with_suffix('.mp3')
-        return archivo_mp3
+            ydl.download([url])
+        return "✅ MP3 descargado con éxito."
     except Exception as e:
         print(e)
-        return None
+        return "❌ Error: escribe correctamente la(s) url(s)."
 
-# --- Streamlit UI ---
+# --- Streamlit App ---
 
 st.set_page_config(page_title="Descarga Nomás", page_icon="🎧")
 
-# Logo + Título
-col1, col2 = st.columns([1, 4])
+# Crear dos columnas: una para el logo y otra para el título
+col1, col2 = st.columns([1, 4])  # Puedes ajustar la proporción si deseas
+
 with col1:
-    st.image("logo.png", width=130)
+    st.image("logo.png", width=150)  # Ajusta el tamaño según lo que necesites
+
 with col2:
     st.markdown("<h1 style='margin-top: 20px;'>Descarga Nomás 🎶</h1>", unsafe_allow_html=True)
 
@@ -53,15 +49,5 @@ if descargar_btn and urls_input:
     urls = [u.strip() for u in urls_input.split(',') if u.strip()]
     with st.spinner("Descargando MP3..."):
         for url in urls:
-            archivo = descargar_mp3(url)
-            if archivo and archivo.exists():
-                st.success(f"✅ {archivo.name} descargado.")
-                with open(archivo, 'rb') as f:
-                    st.download_button(
-                        label=f"⬇️ Descargar {archivo.name}",
-                        data=f,
-                        file_name=archivo.name,
-                        mime="audio/mpeg"
-                    )
-            else:
-                st.error("❌ Error: no se pudo descargar el archivo.")
+            resultado = descargar_mp3(url)
+            st.success(resultado)
