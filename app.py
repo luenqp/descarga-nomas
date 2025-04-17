@@ -1,14 +1,11 @@
+import os
 import streamlit as st
 import yt_dlp
-import os
+from pathlib import Path
 import imageio_ffmpeg
 
-# Obtener ruta exacta de ffmpeg
+# Obtener la ruta del ejecutable de ffmpeg portable
 ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
-ffmpeg_dir = os.path.dirname(ffmpeg_path)
-
-# Añadir ffmpeg al PATH
-os.environ["PATH"] += os.pathsep + ffmpeg_dir
 
 def descargar_mp3(url, carpeta_destino='descargas'):
     if not os.path.exists(carpeta_destino):
@@ -17,50 +14,52 @@ def descargar_mp3(url, carpeta_destino='descargas'):
     opciones = {
         'format': 'bestaudio/best',
         'outtmpl': f'{carpeta_destino}/%(title)s.%(ext)s',
-        'ffmpeg_location': ffmpeg_path,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'postprocessor_args': [
-            '-ffmpeg_location', ffmpeg_path,
-            '-ffprobe_location', ffmpeg_path
-        ],
+        'ffmpeg_location': ffmpeg_path,  # Esta es la forma correcta
         'quiet': True,
         'no_warnings': True,
     }
 
     try:
         with yt_dlp.YoutubeDL(opciones) as ydl:
-            ydl.download([url])
-        return "✅ MP3 descargado con éxito."
+            info = ydl.extract_info(url, download=True)
+            archivo = ydl.prepare_filename(info)
+            mp3_file = Path(archivo).with_suffix(".mp3")
+            return str(mp3_file)
     except Exception as e:
-        print(e)
-        return "❌ Error: escribe correctamente la(s) url(s)."
+        print("Error:", e)
+        return None
 
 # --- Streamlit App ---
 
 st.set_page_config(page_title="Descarga Nomás", page_icon="🎧")
 
-# Crear dos columnas: una para el logo y otra para el título
-col1, col2 = st.columns([1, 4])  # Puedes ajustar la proporción si deseas
-
+col1, col2 = st.columns([1, 4])
 with col1:
-    st.image("logo.png", width=150)  # Ajusta el tamaño según lo que necesites
-
+    st.image("logo.png", width=120)
 with col2:
     st.markdown("<h1 style='margin-top: 20px;'>Descarga Nomás 🎶</h1>", unsafe_allow_html=True)
 
 st.write("Descarga tu música MP3 de manera rápida y sencilla.")
-st.write("Pega una o más URLs de YouTube (separadas por comas):")
+urls_input = st.text_area("🔗 Pega una o más URLs de YouTube (separadas por comas):", height=100)
 
-urls_input = st.text_area("🔗 URLs", height=100)
-descargar_btn = st.button("Descargar MP3")
-
-if descargar_btn and urls_input:
+if st.button("Descargar MP3") and urls_input:
     urls = [u.strip() for u in urls_input.split(',') if u.strip()]
-    with st.spinner("Descargando MP3..."):
-        for url in urls:
-            resultado = descargar_mp3(url)
-            st.success(resultado)
+    for url in urls:
+        with st.spinner(f"Descargando: {url}"):
+            archivo = descargar_mp3(url)
+            if archivo and os.path.exists(archivo):
+                st.success(f"✅ Descargado: {Path(archivo).name}")
+                with open(archivo, "rb") as f:
+                    st.download_button(
+                        label=f"⬇️ Descargar {Path(archivo).name}",
+                        data=f,
+                        file_name=Path(archivo).name,
+                        mime="audio/mpeg"
+                    )
+            else:
+                st.error("❌ Error al descargar el MP3.")
