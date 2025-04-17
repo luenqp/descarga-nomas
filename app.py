@@ -44,7 +44,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.image("logo.png", width=120)
 with col2:
-    st.markdown("<h1 style='margin-top: 20px;'>Descarga<br/>Nomás 🎶</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='margin-top: 5px;'>Descarga<br/>Nomás 🎶</h1>", unsafe_allow_html=True)
 
 st.write("Descarga tu música MP3 de manera rápida y sencilla.")
 urls_input = st.text_area("🔗 Pega una o más URLs de YouTube (separadas por comas):", height=100)
