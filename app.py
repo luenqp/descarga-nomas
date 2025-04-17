@@ -44,7 +44,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.image("logo.png", width=120)
 with col2:
-    st.markdown("<h1 style='margin-top: 20px;'>Descarga Nomás 🎶</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='margin-top: 20px;'>Descarga<br/>Nomás 🎶</h1>", unsafe_allow_html=True)
 
 st.write("Descarga tu música MP3 de manera rápida y sencilla.")
 urls_input = st.text_area("🔗 Pega una o más URLs de YouTube (separadas por comas):", height=100)
@@ -65,4 +65,6 @@ if st.button("Convertir a MP3") and urls_input:
                     )
             else:
                 st.error("❌ Error al descargar el MP3.")
+st.header("Colabora voluntariamente ... gracias :)")
+st.image("yapeo.jpeg", width=300)
 
