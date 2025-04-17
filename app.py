@@ -6,9 +6,11 @@ import imageio_ffmpeg
 
 # Obtener la ruta del ejecutable de ffmpeg portable
 ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+print("ffmpeg_path: ", ffmpeg_path)
 
 def descargar_mp3(url, carpeta_destino='descargas'):
     if not os.path.exists(carpeta_destino):
+        print(f"Creando carpeta {carpeta_destino}")
         os.makedirs(carpeta_destino)
 
     opciones = {
@@ -47,10 +49,10 @@ with col2:
 st.write("Descarga tu música MP3 de manera rápida y sencilla.")
 urls_input = st.text_area("🔗 Pega una o más URLs de YouTube (separadas por comas):", height=100)
 
-if st.button("Descargar MP3") and urls_input:
+if st.button("Convertir a MP3") and urls_input:
     urls = [u.strip() for u in urls_input.split(',') if u.strip()]
     for url in urls:
-        with st.spinner(f"Descargando: {url}"):
+        with st.spinner(f"Convertiendo: {url}"):
             archivo = descargar_mp3(url)
             if archivo and os.path.exists(archivo):
                 st.success(f"✅ Descargado: {Path(archivo).name}")
