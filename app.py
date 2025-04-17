@@ -23,6 +23,10 @@ def descargar_mp3(url, carpeta_destino='descargas'):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
+        'postprocessor_args': [
+            '-ffmpeg_location', ffmpeg_path,
+            '-ffprobe_location', ffmpeg_path
+        ],
         'quiet': True,
         'no_warnings': True,
     }
